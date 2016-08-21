@@ -3,7 +3,8 @@ var express = require('express');
 var cookie_parser = require('cookie-parser');
 var app = express();
 var httpserv = http.createServer(app); // HTTP server
-httpserv.listen(80);
+var port = typeof process.env.PORT !== 'undefined' ? process.env.PORT : 8080;
+httpserv.listen(port);
 
 var io = require('socket.io').listen(httpserv); // Websocket server
 io.set('heartbeat timeout', 10000);
