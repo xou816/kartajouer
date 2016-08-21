@@ -3,7 +3,7 @@ var express = require('express');
 var cookie_parser = require('cookie-parser');
 var app = express();
 var httpserv = http.createServer(app); // HTTP server
-httpserv.listen(8080);
+httpserv.listen(80);
 
 var io = require('socket.io').listen(httpserv); // Websocket server
 io.set('heartbeat timeout', 10000);
