@@ -1,0 +1,19 @@
+{
+  "name": "cardgame",
+  "version": "1.0.0",
+  "description": "A cardgame library and server frontend.",
+  "main": "main.js",
+  "dependencies": {
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.5.1",
+    "express": "^4.14.0",
+    "rfr": "^1.2.3",
+    "socket.io": "^1.4.8"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node main.js"
+  },
+  "author": "Alexandre Trendel <trendel.alexandre@gmail.com>",
+  "license": "ISC"
+}

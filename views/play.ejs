@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Card Game</title>
+        <link href="/static/style.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    </head>
+    <body>
+        <div id="game"></div>
+        <div id="chat">
+            <div></div>
+            <input type="text" placeholder="Message..." />
+        </div>
+    </body>
+    <script type="text/javascript" src="/static/jquery-3.1.0.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="/lib/common.js"></script>
+    <script type="text/javascript" src="/lib/transform.js"></script>
+    <script type="text/javascript" src="/lib/client.js"></script>
+    <% dep.forEach(function(path) { %>
+    <script type="text/javascript" src="<%= path %>"></script>
+    <% }); %>
+
+    <script type="text/javascript">
+    board = new game.ClientBoard(document.getElementById('game'), io('/<%= room %>'), '<%= cookies["name"] %>');
+
+    var prev = null;
+    var hist = [];
+    var hist_pos = -1;
+
+    var date = function(time) {
+        var date = new Date(time);
+        var day = date.getDate();
+        day = day < 10 ? '0'+day.toString() : day;
+        var month = date.getMonth()+1;
+        month = month < 10 ? '0'+month.toString() : month;
+        var hour = date.getHours();
+        hour = hour < 10 ? '0'+hour.toString() : hour;
+        var minute = date.getMinutes();
+        minute = minute < 10 ? '0'+minute.toString() : minute;
+        return hour+':'+minute;
+        // return day+'/'+month+', '+hour+':'+minute;
+    }
+
+    board.on_message_received(function(data) {
+        if (Date.now()-data.time < 3600*1000) {
+            if (data.from !== 'Server') {
+                var show_from = prev === null || prev.from !== data.from || data.time - prev.time > 600*1000 || prev.bot !== data.bot;
+                if (show_from) {
+                    $('#chat > div').append($('<h4 data-date="'+date(data.time)+'" class="'+(data.bot ? 'bot' : '')+'">'+data.from+'</h4>'));
+                    $('#chat > div').append($('<div class="message"></div>'));
+                }
+                var el = $('<p class="'+(data.private ? 'private' : '')+'">').html(data.message);
+                $('#chat > div div.message:last-child').append(el);
+            } else if (prev === null || prev.from !== 'Server' || data.message !== prev.message) {
+                $('#chat > div').append($('<p class="server">').html('('+date(data.time)+') '+data.message));
+            }
+            prev = data;
+        }
+    });
+
+    var input = $('#chat input[type=text]');
+
+    input.keydown(function(event) {
+        if (event.which === 13) { // Enter
+            event.preventDefault();
+            var message = input.val();
+            if (message.trim().length !== '') {
+                board.chat_send(message);
+                hist.push(message);
+                hist_pos = hist.length;
+            }
+            input.val('');
+        } else if (event.which === 40) { // Down
+            if (hist_pos < hist.length-1) {
+                hist_pos++;
+                input.val(hist[hist_pos]);
+            } else {
+                hist_pos = hist.length;
+                input.val('');
+            }
+        } else if (event.which === 38) { // Up
+            if (hist_pos > 0) {
+                hist_pos--;
+                input.val(hist[hist_pos]);
+            }
+        }
+    });
+
+    $('#chat').on('click', 'h4', function(event) {
+        if (!$(this).hasClass('bot')) {
+            var player = $(this).html();
+            input.val('/pm '+player+' ');
+        }
+    });
+    </script>
+</html>

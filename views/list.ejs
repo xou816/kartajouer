@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8"/>
+        <title>Card Game</title>
+        <link href="/static/style.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    </head>
+
+    <body>
+
+        <section id="main">
+
+            <% if (error !== null) { %>
+            <div class="banner"><%= error %><a href="/" class="invert right">OK</a></div>
+            <% } %>
+
+            <form class="centered" method="get" action="/create">
+            <table>
+
+            <thead>
+                <tr><th>Name</th><th>Game</th><th>Players</th><th></th></tr>
+            </thead>
+
+            <tbody>
+
+                <%
+                Object.keys(rooms).forEach(function(name) {
+                    var room = rooms[name];
+                    var count = room.room.player_count();
+                    var max = room.room.max_players;
+                %>
+                <tr>
+                    <td><%= name %></td>
+                    <td><%= room.game_name %></td>
+                    <td class="<%= count == max ? 'red' : 'green' %>"><%= count %>/<%= max %></td>
+                    <td><a href="play/<%= encodeURIComponent(name) %>" class="<%= count == max ? 'disabled' : '' %>">Play</a></td>
+                </tr>
+                <% }); %>
+
+
+                <tr>
+                <td><input placeholder="Name" type="text" name="room_name" /></td>
+                <td><select name="game_name">
+                <% Object.keys(games).forEach(function(name) { %>
+                    <option value="<%= name %>"><%= name %></option>
+                    <% }); %>
+                </select></td>
+                <td><input type="number" name="max_players" step="1" min="2" max="10" value="2" /></td>
+                <td><input type="submit" value="Create" /></td>
+                </tr>
+
+            </tbody>
+
+            </table>
+            </form>
+
+            <form class="centered" method="get" action="/name">
+                <input class="large" placeholder="Username" type="text" name="name" value="<%= typeof cookies['name'] === 'undefined' ? '' : cookies['name'] %>" /><input type="submit" value="Choose" />
+            </form>
+
+        </section>
+
+    </body>
+
+</html>
