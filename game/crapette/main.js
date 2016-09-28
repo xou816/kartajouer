@@ -56,22 +56,16 @@ exports.Crapette.prototype.add_player_decks = function(player) {
     var deck = new common.Spot(30, 75, 10, 20);
     deck.owner = player;
     deck.orientation = this.player_orientation(player);
-    deck.layout.owner = {
-        drop: 'deck, downside',
-        drag: 'upside',
-    };
-    deck.policy.owner = {
-        drop: 'accept_none',
-        drag: 'match_topstack',
-    };
-    deck.layout.player = {
-        drop: 'deck, downside',
-        drag: 'upside',
-    };
-    deck.policy.player = {
-        drop: 'accept_none',
-        drag: 'match_none',
-    };
+
+    // Owner
+    deck.layout.owner = 'deck';
+    deck.visibility.owner = { drop: 'downside', drag: 'upside' }
+    deck.policy.owner = { drop: 'accept_none', drag: 'match_topstack' };
+    // Player
+    deck.layout.player = 'deck';
+    deck.visibility.player = { drop: 'downside', drag: 'upside' };
+    deck.policy.player = { drop: 'accept_none', drag: 'match_none' };
+
     for (var i = 0; i < nb; i++) deck.push(this.random_card());
     this.decks[player] = deck;
     this.register_spot(deck);
@@ -79,24 +73,18 @@ exports.Crapette.prototype.add_player_decks = function(player) {
     var pile = new common.Spot(50, 75, 10, 20);
     pile.owner = player;
     pile.orientation = this.player_orientation(player);
-    pile.layout.owner = {
-        drop: 'random, upside',
-        drag: 'upside',
-    };
-    pile.policy.owner = {
-        drop: 'keep_ownership',
-        drag: 'match_topstack',
-    };
-    pile.layout.player = {
-        drop: 'random, upside',
-        drag: 'upside',
-    };
-    pile.policy.player = {
-        drop: 'accept_desc & accept_alt_colors & not_empty',
-        // mdrrr
-        // drop: '1 & (accept_any & !accept_none) | (accept_desc & ((accept_alt_colors & not_empty) & !accept_none))',
-        drag: 'match_none',
-    };
+
+    // Owner
+    pile.layout.owner = 'random';
+    pile.visibility.owner = { drop: 'upside', drag: 'upside' };
+    pile.policy.owner = { drop: 'keep_ownership', drag: 'match_topstack' };
+    // Player
+    pile.layout.player = 'random' ;
+    pile.visibility.player = { drop: 'upside', drag: 'upside' };
+    pile.policy.player = { drop: 'accept_desc & accept_alt_colors & not_empty', drag: 'match_none' };
+    // mdrrr
+    // pile.policy.player.drop = '1 & (accept_any & !accept_none) | (accept_desc & ((accept_alt_colors & not_empty) & !accept_none))';
+
     this.piles[player] = pile;
     this.register_spot(pile);
 };
@@ -117,14 +105,9 @@ exports.Crapette.prototype.init = function() {
 
     for (var i = 0; i < 6; i++) {
         var spot = new common.Spot(2+i*12, 40, 10, 20);
-        spot.layout.player = {
-            drop: 'offset, upside',
-            drag: 'upside',
-        };
-        spot.policy.player = {
-            drop: 'accept_desc & accept_alt_colors',
-            drag: 'match_above',
-        };
+        spot.layout.player = 'offset';
+        spot.visibility.player = { drop: 'upside', drag: 'upside' };
+        spot.policy.player = { drop: 'accept_desc & accept_alt_colors', drag: 'match_above' };
         spot.push(this.random_card());
         this.register_spot(spot);
     }
@@ -132,14 +115,9 @@ exports.Crapette.prototype.init = function() {
     for (var i = 0; i < 4; i++) {
         var spot = new common.Spot(26+i*12, 0, 10, 20);
         spot.orientation = Math.PI/2;
-        spot.layout.player = {
-            drop: 'offset, upside',
-            drag: 'upside',
-        };
-        spot.policy.player = {
-            drop: 'accept_asc & keep_family & first_real_value_is_one',
-            drag: 'match_above',
-        };
+        spot.layout.player = 'offset';
+        spot.visibility.player = { drop: 'upside', drag: 'upside' };
+        spot.policy.player = { drop: 'accept_asc & keep_family & first_real_value_is_one', drag: 'match_above' };
         this.register_spot(spot);
     }
 

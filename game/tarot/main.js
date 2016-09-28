@@ -173,12 +173,14 @@ exports.Tarot.prototype.init_player_cards = function(player) {
     var pile = new common.Spot(110, 40, 10, 20);
     pile.owner = player;
     pile.orientation = this.player_orientation(player) + Math.PI/2;
-    pile.layout.owner = {
-        drop: 'random, upside',
+    pile.layout.owner = 'random';
+    pile.visibility.owner = {
+        drop: 'upside',
         drag: 'downside',
     };
-    pile.layout.player = {
-        drop: 'random, downside',
+    pile.layout.player = 'random';
+    pile.visibility.player = {
+        drop: 'downside',
         drag: 'downside',
     };
     this.register_spot(pile);
@@ -187,13 +189,15 @@ exports.Tarot.prototype.init_player_cards = function(player) {
     var hand = new common.Spot(45, 76, 10, 20);
     hand.owner = player;
     hand.orientation = this.player_orientation(player);
-    hand.layout.owner = {
-        drop: 'gallery, upside',
+    hand.layout.owner = 'gallery';
+    hand.visibility.owner = {
+        drop: 'upside',
         drag: 'upside',
     };
-    if (this.max_players > 3) hand.layout.owner.drop = 'hand, upside';
-    hand.layout.player = {
-        drop: 'hand, downside',
+    if (this.max_players > 3) hand.layout.owner = 'hand';
+    hand.layout.player = 'hand';
+    hand.visibility.player = {
+        drop: 'downside',
         drag: 'downside',
     };
     hand.policy.owner = hand.policy.idle_owner = {
@@ -221,8 +225,9 @@ exports.Tarot.prototype.init = function() {
     this.chat_send('TarotBot', 'Pour jouer, utilisez la commande /enchere.');
 
     var center = new common.Spot(35, 35, 30, 30);
-    center.layout.player = {
-        drop: 'random, downside',
+    center.layout.player = 'random';
+    center.visibility.player = {
+        drop: 'downside',
         drag: 'downside',
     };
     center.policy.player = {
@@ -309,11 +314,13 @@ exports.Tarot.prototype.montrer_chien = function() {
     var center = this.center;
     center.owner = this.preneur;
     center.orientation = this.player_orientation(this.preneur);
-    center.layout.player = center.layout.owner = {
-        drop: 'hand, upside',
+    center.layout.player = center.layout.owner = 'hand';
+    center.visibility.player = center.visibility.owner = {
+        drop: 'upside',
         drag: 'upside',
     };
-    this.reveal(this.all, center.stack);
+    center.update_visibility();
+    this.update_cards(this.all, center.stack);
     this.update_spot(center);
 
     timers.setTimeout(this.faire_chien.bind(this), 5000);
@@ -327,14 +334,17 @@ exports.Tarot.prototype.faire_chien = function() {
     this.chat_send('TarotBot', 'Quand votre chien est prêt, tapez /chien.', this.get_socket(this.preneur));
 
     var center = this.center;
-    center.layout.player = {
-        drop: 'hand, downside',
+    center.layout.player = 'hand';
+    center.visibility.player = {
+        drop: 'downside',
         drag: 'downside',
     };
     center.policy.owner = {
         drop: 'tarot_chien',
         drag: 'match_topmatch',
     };
+    center.update_visibility();
+    this.update_cards(this.all, center.stack);
     this.update_spot(center);
 
     var hand = this.hands[this.preneur];
@@ -346,8 +356,9 @@ exports.Tarot.prototype.faire_chien = function() {
 exports.Tarot.prototype.donner_chien = function(player) {
     this.center.owner = -1;
     this.center.orientation = 0;
-    this.center.layout.player = {
-        drop: 'random, upside',
+    this.center.layout.player = 'random';
+    this.center.visibility.player = {
+        drop: 'upside',
         drag: 'upside',
     };
     this.center.policy.player = {
