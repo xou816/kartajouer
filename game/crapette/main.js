@@ -79,7 +79,7 @@ exports.Crapette.prototype.add_player_decks = function(player) {
     pile.visibility.owner = { drop: 'upside', drag: 'upside' };
     pile.policy.owner = { drop: 'keep_ownership', drag: 'match_topstack' };
     // Player
-    pile.layout.player = 'random' ;
+    pile.layout.player = 'random';
     pile.visibility.player = { drop: 'upside', drag: 'upside' };
     pile.policy.player = { drop: 'accept_desc & accept_alt_colors & not_empty', drag: 'match_none' };
     // mdrrr

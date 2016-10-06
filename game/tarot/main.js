@@ -242,7 +242,7 @@ exports.Tarot.prototype.init = function() {
 
 };
 
-exports.Tarot.prototype.command_enchere = function(socket, player, args) {
+exports.Tarot.prototype.command_enchere = function(socket, player, args, data) {
 
     if (this.can_play(player) && this.phase == 'Enchère') {
 
@@ -261,7 +261,7 @@ exports.Tarot.prototype.command_enchere = function(socket, player, args) {
                 return;
             }
 
-            this.chat_send(this.get_name(player), message[prise]);
+            this.chat_send(this.get_name(player), message[prise], this.all, data.time);
             if (prise > this.prise) {
                 this.preneur = player;
                 this.attaque.push(player)
@@ -320,7 +320,6 @@ exports.Tarot.prototype.montrer_chien = function() {
         drag: 'upside',
     };
     center.update_visibility();
-    this.update_cards(this.all, center.stack);
     this.update_spot(center);
 
     timers.setTimeout(this.faire_chien.bind(this), 5000);
@@ -344,7 +343,6 @@ exports.Tarot.prototype.faire_chien = function() {
         drag: 'match_topmatch',
     };
     center.update_visibility();
-    this.update_cards(this.all, center.stack);
     this.update_spot(center);
 
     var hand = this.hands[this.preneur];
@@ -365,20 +363,21 @@ exports.Tarot.prototype.donner_chien = function(player) {
         drop: 'tarot_jeu | accept_cancel',
         drag: 'match_above',
     };
+    this.center.update_visibility();
     this.update_spot(this.center);
     this.move(this.center, this.piles[player]);
     this.phase = 'Jeu';
     this.next_turn(0);
 };
 
-exports.Tarot.prototype.command_chien = function(socket, player, args) {
+exports.Tarot.prototype.command_chien = function(socket, player, args, data) {
 
     var center = this.center;
     var hand = this.hands[this.preneur];
 
     if (this.can_play(player) && this.phase == 'Faire chien') {
         if (center.stack.length === this.taille_chien && tarot.chien_valide(center.stack)) {
-            this.chat_send(this.get_name(this.preneur), 'Chient fait!');
+            this.chat_send(this.get_name(this.preneur), 'Chient fait!', this.all, data.time);
             this.donner_chien(this.preneur);
         } else {
             this.chat_send('TarotBot', 'Il faut mettre '+this.taille_chien.toString()+ ' cartes dans le chien (pas de roi, pas de bout).', socket);
@@ -404,7 +403,7 @@ exports.Tarot.prototype.command_appel = function(socket, player, args) {
         if (typeof trad[args] !== 'undefined') {
 
             this.appel = trad[args];
-            this.chat_send(this.get_name(this.preneur), 'J\'appelle à '+args+'!');
+            this.chat_send(this.get_name(this.preneur), 'J\'appelle à '+args+'!', this.all, data.time);
 
             var count = 4;
             var value = 15;
