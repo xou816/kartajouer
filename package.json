@@ -1,7 +1,7 @@
 {
   "name": "cardgame",
   "version": "1.0.0",
-  "description": "A cardgame library and server frontend.",
+  "description": "Real time card games using WebSockets.",
   "main": "main.js",
   "dependencies": {
     "cookie-parser": "^1.4.3",
